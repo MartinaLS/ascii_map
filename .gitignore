@@ -1,0 +1,18 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+.gradle-home
+
+# Ignore Gradle build output directory
+build
+
+# Ignore Intellij Idea specific directories
+.idea
+*.iml
+*.iws
+*.ipr
+
+# Other ignored files
+.DS_Store
+
+*.hprof
+tmlog*.log
