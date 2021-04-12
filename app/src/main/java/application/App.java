@@ -4,6 +4,7 @@
 package application;
 
 import model.Labyrinth;
+import engine.MoveEngine;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -13,25 +14,25 @@ import java.util.Scanner;
 public class App {
 
    public static void main(String[] args) {
+      List<String> lines = readFile("ascii_path_3.txt");
+      MoveEngine moveEngine = new MoveEngine(new Labyrinth(lines));
+      while (moveEngine.nextMove()) {
+         System.out.println(moveEngine.getMoveTrace().getFullTrace());
+      }
+   }
+
+   private static List<String> readFile(String filePath) {
       Scanner input = null;
       try {
-         input = new Scanner(Path.of(App.class.getClassLoader().getResource("ascii_path_5.txt").toURI()))
+         input = new Scanner(Path.of(App.class.getClassLoader().getResource(filePath).toURI()))
                .useDelimiter("\n");
       } catch (Exception e) {
-         e.printStackTrace();
+         //ignore ex
       }
-
       List<String> lines = new ArrayList<>();
       while (input != null && input.hasNext()) {
          lines.add(input.next());
       }
-
-      Labyrinth labyrinth = new Labyrinth(lines);
-
-      while (labyrinth.nextMove()) {
-         System.out.println(labyrinth.getFullPath());
-      }
-
-      System.out.println(labyrinth.getFullPath());
+      return lines;
    }
 }

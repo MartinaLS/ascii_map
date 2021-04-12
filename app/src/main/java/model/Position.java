@@ -37,4 +37,24 @@ public class Position {
    public static Position of(int rowIndex, int columnIndex) {
       return new Position(rowIndex, columnIndex);
    }
+
+   @Override
+   public boolean equals(Object other) {
+      if (other == this) {
+         return true;
+      }
+      if (!(other instanceof Position)) {
+         return false;
+      }
+      return rowIndex == ((Position) other).rowIndex && columnIndex == ((Position) other).columnIndex;
+   }
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + rowIndex;
+      result = prime * result + columnIndex;
+      return result;
+   }
 }

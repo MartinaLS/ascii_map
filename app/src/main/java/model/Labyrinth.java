@@ -14,20 +14,13 @@ public class Labyrinth {
 
    private Position startPosition;
 
-   private Position currentPosition;
-
-   private Position previousPosition;
-
-   private Direction currentDirection;
-
-   private final StringBuilder fullPathBuilder = new StringBuilder();
+   private State currentState = new State();
 
    public Labyrinth(List<String> inputLines) {
-      buildMatrix(inputLines);
-      initPositions();
+      load(inputLines);
    }
 
-   private void buildMatrix(List<String> lines) {
+   private void load(List<String> lines) {
       maxRows = lines.size();
       maxColumns = lines.stream()
             .max((f, s) -> s.length() < f.length() ? 1 : -1)
@@ -41,8 +34,7 @@ public class Labyrinth {
             matrix[rowIndex.get()][columnIndex] = String.valueOf(c);
             if (c == '@') {
                startPosition = Position.of(rowIndex.get(), columnIndex);
-               currentPosition = startPosition;
-               fullPathBuilder.append(c);
+               currentState.position = startPosition;
             }
          }
          rowIndex.incrementAndGet();
@@ -54,140 +46,64 @@ public class Labyrinth {
             && position.getRowIndex() >= 0 && position.getRowIndex() < maxRows;
    }
 
-   public boolean isPositionValidAndEqualTo(Position p, String... elements) {
-      return isPositionValid(p) && Arrays.asList(elements).stream().anyMatch(el -> el.equals(getCharOnPosition(p)));
+   public boolean isPositionValidAndIsNotEqualTo(Position p, String... elements) {
+      return isPositionValid(p) && Arrays.stream(elements).noneMatch(el -> el.equals(getCharOnPosition(p)));
    }
 
-   public boolean isPositionValidAndIsNotEqualTo(Position p, String... elements) {
-      return isPositionValid(p) && Arrays.asList(elements).stream().noneMatch(el -> el.equals(getCharOnPosition(p)));
+   public State getCurrentState() {
+      return currentState;
+   }
+
+   public String getCharOnCurrentPosition() {
+      return getCharOnPosition(currentState.position);
    }
 
    public String getCharOnPosition(Position position) {
       if (isPositionValid(position)) {
          return matrix[position.getRowIndex()][position.getColumnIndex()];
       }
-
-      return "n";
+      return null;
    }
 
-   public boolean nextMove() {
-      Pair pair = null;
-      if (isPositionValidAndIsNotEqualTo(currentPosition, " ", "x", "+", "@")) {
-         pair = changePosition();
-      }
-
-      previousPosition = currentPosition;
-      if ((pair == null || pair.getPosition().isEmpty()) && isPositionValidAndIsNotEqualTo(currentPosition, "x")) {
-         pair = changeDirectionAndPosition();
-      }
-
-      if (pair != null && pair.getPosition().isPresent()) {
-         currentPosition = pair.getPosition().get();
-      }
-      if (pair != null && pair.getDirection().isPresent()) {
-         currentDirection = pair.getDirection().get();
-      }
-
-      fullPathBuilder.append(getCharOnPosition(currentPosition));
-
-      return !getCharOnPosition(currentPosition).equals("x");
+   public boolean isDownPositionValidAndNotEqualTo(String... elements) {
+      return isPositionValidAndIsNotEqualTo(currentState.position.getDownPosition(), elements);
    }
 
-
-   public Pair changeDirectionAndPosition() {
-      Position newPosition = null;
-      Direction newDirection = null;
-      if (currentDirection.isLeft() || currentDirection.isRight()) {
-         if (isPositionValidAndIsNotEqualTo(currentPosition.getDownPosition(), " ", "@")) {
-            newPosition = currentPosition.getDownPosition();
-            newDirection = Direction.DOWN;
-         }
-
-         if (isPositionValidAndIsNotEqualTo(currentPosition.getUpPosition(), " ", "@")) {
-            newPosition = currentPosition.getUpPosition();
-            newDirection = Direction.UP;
-         }
-      } else if (currentDirection.isUp() || currentDirection.isDown()) {
-         if (isPositionValidAndIsNotEqualTo(currentPosition.getRightPosition(), " ", "@")) {
-            newPosition = currentPosition.getRightPosition();
-            newDirection = Direction.RIGHT;
-         }
-
-         if (isPositionValidAndIsNotEqualTo(currentPosition.getLeftPosition(), " ", "@")) {
-            newPosition = currentPosition.getLeftPosition();
-            newDirection = Direction.LEFT;
-         }
-      }
-
-      return Pair.of(newPosition, newDirection);
+   public boolean isUpperPositionValidAndNotEqualTo(String... elements) {
+      return isPositionValidAndIsNotEqualTo(currentState.position.getUpPosition(), elements);
    }
 
-   public Pair changePosition() {
-      Position newPosition = null;
-      Direction newDirection = currentDirection;
-      if (currentDirection.isLeft() && isPositionValidAndIsNotEqualTo(currentPosition.getLeftPosition(), " ", "@")) {
-         newPosition = currentPosition.getLeftPosition();
-      }
-      if (currentDirection.isRight() && isPositionValidAndIsNotEqualTo(currentPosition.getRightPosition(), " ", "@")) {
-         newPosition = currentPosition.getRightPosition();
-      }
-      if (currentDirection.isDown() && isPositionValidAndIsNotEqualTo(currentPosition.getDownPosition(), " ", "@")) {
-         newPosition = currentPosition.getDownPosition();
-      }
-      if (currentDirection.isUp() && isPositionValidAndIsNotEqualTo(currentPosition.getUpPosition(), " ", "@")) {
-         newPosition = currentPosition.getUpPosition();
-      }
-
-      return Pair.of(newPosition, newDirection);
+   public boolean isLeftPositionValidAndNotEqualTo(String... elements) {
+      return isPositionValidAndIsNotEqualTo(currentState.position.getLeftPosition(), elements);
    }
 
-   private void initPositions() {
-      if (startPosition == currentPosition) {
-         Position newPosition = currentPosition.getLeftPosition();
-         if (isPositionValidAndIsNotEqualTo(newPosition, " ")) {
-            currentPosition = newPosition;
-            currentDirection = Direction.LEFT;
-         }
-         newPosition = currentPosition.getRightPosition();
-         if (isPositionValidAndIsNotEqualTo(newPosition, " ")) {
-            currentPosition = newPosition;
-            currentDirection = Direction.RIGHT;
-         }
-
-         newPosition = currentPosition.getUpPosition();
-         if (isPositionValidAndIsNotEqualTo(newPosition, " ")) {
-            currentPosition = newPosition;
-            currentDirection = Direction.UP;
-         }
-
-         newPosition = currentPosition.getDownPosition();
-         if (isPositionValidAndIsNotEqualTo(newPosition, " ")) {
-            currentPosition = newPosition;
-            currentDirection = Direction.DOWN;
-         }
-
-         fullPathBuilder.append(getCharOnPosition(currentPosition));
-         previousPosition = startPosition;
-      }
+   public boolean isRightPositionValidAndNotEqualTo(String... elements) {
+      return isPositionValidAndIsNotEqualTo(currentState.position.getRightPosition(), elements);
    }
 
-   public String getFullPath() {
-      return fullPathBuilder.toString();
+   public boolean isCurrentPositionValidAndNotEqualTo(String... elements) {
+      return isPositionValidAndIsNotEqualTo(currentState.position, elements);
    }
 
+   public void setCurrentState(State state) {
+      this.currentState = state;
+   }
 
-   public static class Pair {
+   public static class State {
       private Position position;
 
-      private Direction direction;
+      private Direction direction = Direction.UNDEFINED;
 
-      private Pair(Position position, Direction direction) {
+      private State() {
+      }
+
+      private State(Position position, Direction direction) {
          this.position = position;
          this.direction = direction;
       }
 
-      public static Pair of(Position position, Direction direction) {
-         return new Pair(position, direction);
+      public static State of(Position position, Direction direction) {
+         return new State(position, direction);
       }
 
       public Optional<Position> getPosition() {
