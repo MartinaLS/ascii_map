@@ -14,5 +14,5 @@ dependencies {
 }
 
 application {
-    mainClass.set("demo.App") // <5>
+    mainClass.set("application.App") // <5>
 }
