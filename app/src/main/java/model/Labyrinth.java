@@ -1,18 +1,28 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Labyrinth {
+   public static final String START_POINT = "@";
+
+   public static final String END_POINT = "x";
+
+   public static final String EMPTY_POINT = " ";
+
    private String[][] matrix = new String[100][100];
 
    private int maxRows = 100;
 
    private int maxColumns = 100;
 
-   private Position startPosition;
+   private final List<Position> startPositions = new ArrayList<>();
+
+   private final List<Position> endPositions = new ArrayList<>();
 
    private State currentState = new State();
 
@@ -23,22 +33,35 @@ public class Labyrinth {
    private void load(List<String> lines) {
       maxRows = lines.size();
       maxColumns = lines.stream()
-            .max((f, s) -> s.length() < f.length() ? 1 : -1)
+            .max(Comparator.comparingInt(String::length))
             .map(String::length).orElse(0);
-
       matrix = new String[maxRows][maxColumns];
-      final AtomicInteger rowIndex = new AtomicInteger(0);
+
+      final AtomicInteger rowCounter = new AtomicInteger(0);
       lines.forEach((line) -> {
+         int rowIndex = rowCounter.getAndIncrement();
          for (int columnIndex = 0; columnIndex < maxColumns; columnIndex++) {
-            char c = columnIndex < line.length() ? line.charAt(columnIndex) : " ".charAt(0);
-            matrix[rowIndex.get()][columnIndex] = String.valueOf(c);
-            if (c == '@') {
-               startPosition = Position.of(rowIndex.get(), columnIndex);
-               currentState.position = startPosition;
+            String character = columnIndex < line.length() ? line.substring(columnIndex, columnIndex + 1) : EMPTY_POINT;
+            matrix[rowIndex][columnIndex] = character;
+
+            if (START_POINT.equals(character)) {
+               startPositions.add(Position.of(rowIndex, columnIndex));
+            }
+
+            if (END_POINT.equals(character)) {
+               endPositions.add(Position.of(rowIndex, columnIndex));
             }
          }
-         rowIndex.incrementAndGet();
       });
+
+      if (startPositions.size() != 1) {
+         throw new RuntimeException("Cannot determine starting point.");
+      }
+      currentState.position = startPositions.get(0);
+
+      if (endPositions.size() != 1) {
+         throw new RuntimeException("Cannot determine end point.");
+      }
    }
 
    public boolean isPositionValid(Position position) {
@@ -48,10 +71,6 @@ public class Labyrinth {
 
    public boolean isPositionValidAndIsNotEqualTo(Position p, String... elements) {
       return isPositionValid(p) && Arrays.stream(elements).noneMatch(el -> el.equals(getCharOnPosition(p)));
-   }
-
-   public State getCurrentState() {
-      return currentState;
    }
 
    public String getCharOnCurrentPosition() {
@@ -99,6 +118,10 @@ public class Labyrinth {
 
    public void setCurrentState(State state) {
       this.currentState = state;
+   }
+
+   public State getCurrentState() {
+      return currentState;
    }
 
    public static class State {

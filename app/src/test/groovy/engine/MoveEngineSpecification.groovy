@@ -89,7 +89,7 @@ class MoveEngineSpecification extends Specification {
         moveEngine.getMoveTrace().onlySpecialCharTrace == 'ABCD'
     }
 
-    def "test moveToTheEnd_case5:Map 6 - basic example"() {
+    def "test moveToTheEnd_case6:Map 6 - basic example"() {
         given:
         List<String> lines = FileUtils.readFile("case6.txt")
         Labyrinth labyrinth = new Labyrinth(lines)

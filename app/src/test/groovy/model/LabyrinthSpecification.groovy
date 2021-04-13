@@ -1,5 +1,6 @@
 package model
 
+
 import spock.lang.Specification
 import spock.lang.Unroll
 import util.FileUtils
@@ -182,5 +183,23 @@ class LabyrinthSpecification extends Specification {
         new String[]{" "} || true
         new String[]{"-"} || true
         new String[]{"@"} || false
+    }
+
+    def "test labyrinth construction Map 7 - no start (labyrinth not valid)"() {
+        when:
+        List<String> lines = FileUtils.readFile("case7.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
+
+        then:
+        thrown(RuntimeException)
+    }
+
+    def "test labyrinth construction Map 8 - no end (labyrinth not valid)"() {
+        when:
+        List<String> lines = FileUtils.readFile("case8.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
+
+        then:
+        thrown(RuntimeException)
     }
 }

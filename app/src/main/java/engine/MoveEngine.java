@@ -24,8 +24,11 @@ public class MoveEngine {
    public MoveEngine(Labyrinth labyrinth) {
       this.registerRules();
       this.labyrinth = labyrinth;
-      labyrinth.getCurrentState().getPosition().ifPresent(position ->
-            moveTrace.addNewCharacter(position, labyrinth.getCharOnCurrentPosition()));
+      labyrinth.getCurrentState().getPosition().ifPresentOrElse(position ->
+                  moveTrace.addNewCharacter(position, labyrinth.getCharOnCurrentPosition()),
+            () -> {
+               throw new RuntimeException("Unknown starting point.");
+            });
    }
 
    public void moveToTheEnd() {
