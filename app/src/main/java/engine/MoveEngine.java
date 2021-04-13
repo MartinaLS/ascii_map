@@ -3,13 +3,13 @@ package engine;
 import model.Direction;
 import model.Labyrinth;
 import model.Position;
+import model.Trace;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -50,14 +50,14 @@ public class MoveEngine {
    }
 
    public boolean nextMove() {
-      Labyrinth.State state = null;
+      Labyrinth.State newState = null;
       if (labyrinth.isCurrentPositionValidAndNotEqualTo(" ", "x", "+", "@")) {
-         state = labyrinth.getCurrentState().getDirection()
+         newState = labyrinth.getCurrentState().getDirection()
                .map(direction -> changePositionRule.apply(direction)).orElse(null);
       }
 
-      if ((state == null || state.getPosition().isEmpty()) && labyrinth.isCurrentPositionValidAndNotEqualTo("x")) {
-         state = labyrinth.getCurrentState().getDirection()
+      if ((newState == null || newState.getPosition().isEmpty()) && labyrinth.isCurrentPositionValidAndNotEqualTo("x")) {
+         newState = labyrinth.getCurrentState().getDirection()
                .map(direction -> {
                   List<Direction> directions = directionToPerpendicularDirections
                         .getOrDefault(direction, Arrays.asList(UP, DOWN, LEFT, RIGHT));
@@ -66,34 +66,16 @@ public class MoveEngine {
                }).orElse(null);
       }
 
-      String newCharacter = null;
-      if (state != null && state.getPosition().isPresent() && state.getDirection().isPresent()) {
-         labyrinth.setCurrentState(state);
+      Optional.ofNullable(newState)
+            .ifPresent(state -> {
+               labyrinth.setCurrentState(state);
+               trace.addNewCharacter(state.getPosition()
+                     .orElseThrow(() -> {
+                        throw new RuntimeException("Cannot determine next move");
+                     }), labyrinth.getCharOnCurrentPosition());
+            });
 
-         newCharacter = labyrinth.getCharOnCurrentPosition();
-         trace.addNewCharacter(state.getPosition().get(), newCharacter);
-      }
-
-      if (state == null || state.getPosition().isEmpty()) {
-         throw new RuntimeException("Cannot determine next move");
-      }
-
-      return !"x".equals(newCharacter);
-   }
-
-   private void registerRules() {
-      directionToChangeStateRule.put(LEFT, this.buildChangeStateRule());
-      directionToChangeStateRule.put(Direction.RIGHT, this.buildChangeStateRule());
-      directionToChangeStateRule.put(Direction.UP, this.buildChangeStateRule());
-      directionToChangeStateRule.put(Direction.DOWN, this.buildChangeStateRule());
-      directionToChangeStateRule.put(Direction.UNDEFINED, this.buildInitialChangeStateRule());
-
-      changePositionRule = this.buildChangePositionRule();
-
-      directionToPerpendicularDirections.put(LEFT, Arrays.asList(UP, DOWN));
-      directionToPerpendicularDirections.put(RIGHT, Arrays.asList(UP, DOWN));
-      directionToPerpendicularDirections.put(UP, Arrays.asList(RIGHT, LEFT));
-      directionToPerpendicularDirections.put(DOWN, Arrays.asList(RIGHT, LEFT));
+      return !"x".equals(labyrinth.getCharOnCurrentPosition());
    }
 
    private BiFunction<Direction, Direction, Labyrinth.State> buildChangeStateRule() {
@@ -113,7 +95,7 @@ public class MoveEngine {
             countOfPossibleDirections++;
          }
 
-         return countOfPossibleDirections == 1 ? Labyrinth.State.of(newPosition, newDirection) : null;
+         return countOfPossibleDirections == 1 ? Labyrinth.State.of(newPosition, newDirection) : Labyrinth.State.ofUndefined();
       };
    }
 
@@ -144,38 +126,22 @@ public class MoveEngine {
       };
    }
 
-   public Trace getTrace() {
-      return trace;
+   private void registerRules() {
+      directionToChangeStateRule.put(LEFT, this.buildChangeStateRule());
+      directionToChangeStateRule.put(Direction.RIGHT, this.buildChangeStateRule());
+      directionToChangeStateRule.put(Direction.UP, this.buildChangeStateRule());
+      directionToChangeStateRule.put(Direction.DOWN, this.buildChangeStateRule());
+      directionToChangeStateRule.put(Direction.UNDEFINED, this.buildInitialChangeStateRule());
+
+      changePositionRule = this.buildChangePositionRule();
+
+      directionToPerpendicularDirections.put(LEFT, Arrays.asList(UP, DOWN));
+      directionToPerpendicularDirections.put(RIGHT, Arrays.asList(UP, DOWN));
+      directionToPerpendicularDirections.put(UP, Arrays.asList(RIGHT, LEFT));
+      directionToPerpendicularDirections.put(DOWN, Arrays.asList(RIGHT, LEFT));
    }
 
-   public static class Trace {
-      private final String[] unAllowedLetters = {" ", "x", "-", "|", "@", "+"};
-
-      private final StringBuilder fullTraceBuilder = new StringBuilder();
-
-      private final StringBuilder onlySpecialCharTraceBuilder = new StringBuilder();
-
-      private final Set<Position> passedPositions = new HashSet<>();
-
-      public String getFullTrace() {
-         return fullTraceBuilder.toString();
-      }
-
-      public String getOnlySpecialCharTrace() {
-         return onlySpecialCharTraceBuilder.toString();
-      }
-
-      public List<String> getUnAllowedCharacters() {
-         return Arrays.asList(unAllowedLetters);
-      }
-
-      public void addNewCharacter(Position characterPosition, String character) {
-         fullTraceBuilder.append(character);
-
-         if (!passedPositions.contains(characterPosition) && !getUnAllowedCharacters().contains(character)) {
-            passedPositions.add(characterPosition);
-            onlySpecialCharTraceBuilder.append(character);
-         }
-      }
+   public Trace getTrace() {
+      return trace;
    }
 }

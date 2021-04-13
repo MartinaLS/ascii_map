@@ -146,6 +146,10 @@ public class Labyrinth {
          return new State(position, direction);
       }
 
+      public static State ofUndefined() {
+         return new State();
+      }
+
       public Optional<Position> getPosition() {
          return Optional.ofNullable(position);
       }
