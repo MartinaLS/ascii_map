@@ -142,6 +142,11 @@ public class Labyrinth {
          this.direction = direction;
       }
 
+      public void copy(State otherState) {
+         this.position = otherState.position;
+         this.direction = otherState.direction;
+      }
+
       public static State of(Position position, Direction direction) {
          return new State(position, direction);
       }

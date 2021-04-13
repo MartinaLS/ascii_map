@@ -101,17 +101,12 @@ public class MoveEngine {
 
    private BiFunction<Direction, Direction, Labyrinth.State> buildInitialChangeStateRule() {
       return (firstPossibleDirection, secondPossibleDirection) -> {
-         Labyrinth.State currentState = labyrinth.getCurrentState();
-         Labyrinth.State newState = null;
-         if (labyrinth.isNextPositionValidAndNotEqualTo(LEFT, Labyrinth.EMPTY_POINT)) {
-            newState = Labyrinth.State.of(currentState.getPosition().map(Position::getLeftPosition).orElse(null), LEFT);
-         } else if (labyrinth.isNextPositionValidAndNotEqualTo(RIGHT, Labyrinth.EMPTY_POINT)) {
-            newState = Labyrinth.State.of(currentState.getPosition().map(Position::getRightPosition).orElse(null), RIGHT);
-         } else if (labyrinth.isNextPositionValidAndNotEqualTo(UP, Labyrinth.EMPTY_POINT)) {
-            newState = Labyrinth.State.of(currentState.getPosition().map(Position::getUpPosition).orElse(null), UP);
-         } else if (labyrinth.isNextPositionValidAndNotEqualTo(DOWN, Labyrinth.EMPTY_POINT)) {
-            newState = Labyrinth.State.of(currentState.getPosition().map(Position::getDownPosition).orElse(null), DOWN);
-         }
+         final Labyrinth.State newState = Labyrinth.State.ofUndefined();
+         directionToPerpendicularDirections.keySet().forEach(direction -> {
+            if (labyrinth.isNextPositionValidAndNotEqualTo(direction, Labyrinth.EMPTY_POINT)) {
+               newState.copy(Labyrinth.State.of(labyrinth.getNextPosition(direction), direction));
+            }
+         });
          return newState;
       };
    }
