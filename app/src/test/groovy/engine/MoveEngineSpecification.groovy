@@ -102,4 +102,17 @@ class MoveEngineSpecification extends Specification {
         moveEngine.getTrace().fullTrace == '@--+||+---A---x'
         moveEngine.getTrace().onlySpecialCharTrace == 'A'
     }
+
+    def "test moveToTheEnd_case11:Map 11 - too many options"() {
+        given:
+        List<String> lines = FileUtils.readFile("case11.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
+
+        MoveEngine moveEngine = new MoveEngine(labyrinth)
+        when:
+        moveEngine.moveToTheEnd()
+
+        then:
+        thrown(RuntimeException)
+    }
 }

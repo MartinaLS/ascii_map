@@ -192,4 +192,22 @@ class LabyrinthSpecification extends Specification {
         then:
         thrown(RuntimeException)
     }
+
+    def "test labyrinth construction Map 9 - multiple ends (labyrinth not valid)"() {
+        when:
+        List<String> lines = FileUtils.readFile("case9.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
+
+        then:
+        thrown(RuntimeException)
+    }
+
+    def "test labyrinth construction Map 10 - multiple ends (labyrinth not valid)"() {
+        when:
+        List<String> lines = FileUtils.readFile("case10.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
+
+        then:
+        thrown(RuntimeException)
+    }
 }

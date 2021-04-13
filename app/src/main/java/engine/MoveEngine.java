@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static model.Direction.DOWN;
 import static model.Direction.LEFT;
@@ -23,9 +23,11 @@ public class MoveEngine {
 
    private final Labyrinth labyrinth;
 
-   private final Map<Direction, Supplier<Labyrinth.State>> directionToChangeStateRule = new HashMap<>();
+   private final Map<Direction, BiFunction<Direction, Direction, Labyrinth.State>> directionToChangeStateRule = new HashMap<>();
 
    private Function<Direction, Labyrinth.State> changePositionRule;
+
+   private final Map<Direction, List<Direction>> directionToPerpendicularDirections = new HashMap<>();
 
    public MoveEngine(Labyrinth labyrinth) {
       this.registerRules();
@@ -56,7 +58,12 @@ public class MoveEngine {
 
       if ((state == null || state.getPosition().isEmpty()) && labyrinth.isCurrentPositionValidAndNotEqualTo("x")) {
          state = labyrinth.getCurrentState().getDirection()
-               .map(direction -> directionToChangeStateRule.get(direction).get()).orElse(null);
+               .map(direction -> {
+                  List<Direction> directions = directionToPerpendicularDirections
+                        .getOrDefault(direction, Arrays.asList(UP, DOWN, LEFT, RIGHT));
+                  return directionToChangeStateRule.get(direction)
+                        .apply(directions.get(0), directions.get(1));
+               }).orElse(null);
       }
 
       String newCharacter = null;
@@ -67,61 +74,51 @@ public class MoveEngine {
          trace.addNewCharacter(state.getPosition().get(), newCharacter);
       }
 
+      if (state == null || state.getPosition().isEmpty()) {
+         throw new RuntimeException("Cannot determine next move");
+      }
+
       return !"x".equals(newCharacter);
    }
 
    private void registerRules() {
-      directionToChangeStateRule.put(LEFT, this.buildChangeStateRuleForRightAndLeft());
-      directionToChangeStateRule.put(Direction.RIGHT, this.buildChangeStateRuleForRightAndLeft());
-      directionToChangeStateRule.put(Direction.UP, this.buildChangeStateRuleForUpAndDown());
-      directionToChangeStateRule.put(Direction.DOWN, this.buildChangeStateRuleForUpAndDown());
+      directionToChangeStateRule.put(LEFT, this.buildChangeStateRule());
+      directionToChangeStateRule.put(Direction.RIGHT, this.buildChangeStateRule());
+      directionToChangeStateRule.put(Direction.UP, this.buildChangeStateRule());
+      directionToChangeStateRule.put(Direction.DOWN, this.buildChangeStateRule());
       directionToChangeStateRule.put(Direction.UNDEFINED, this.buildInitialChangeStateRule());
 
       changePositionRule = this.buildChangePositionRule();
+
+      directionToPerpendicularDirections.put(LEFT, Arrays.asList(UP, DOWN));
+      directionToPerpendicularDirections.put(RIGHT, Arrays.asList(UP, DOWN));
+      directionToPerpendicularDirections.put(UP, Arrays.asList(RIGHT, LEFT));
+      directionToPerpendicularDirections.put(DOWN, Arrays.asList(RIGHT, LEFT));
    }
 
-   private Supplier<Labyrinth.State> buildChangeStateRuleForRightAndLeft() {
-      return () -> {
+   private BiFunction<Direction, Direction, Labyrinth.State> buildChangeStateRule() {
+      return (firstPossibleDirection, secondPossibleDirection) -> {
          Position newPosition = null;
          Direction newDirection = null;
-         if (labyrinth.isNextPositionValidAndNotEqualTo(DOWN, Labyrinth.EMPTY_POINT, Labyrinth.START_POINT)) {
-            newPosition = labyrinth.getCurrentState().getPosition()
-                  .map(Position::getDownPosition).orElse(null);
-            newDirection = Direction.DOWN;
+         int countOfPossibleDirections = 0;
+         if (labyrinth.isNextPositionValidAndNotEqualTo(firstPossibleDirection, Labyrinth.EMPTY_POINT, Labyrinth.START_POINT)) {
+            newPosition = labyrinth.getNextPosition(firstPossibleDirection);
+            newDirection = firstPossibleDirection;
+            countOfPossibleDirections++;
          }
 
-         if (labyrinth.isNextPositionValidAndNotEqualTo(UP, Labyrinth.EMPTY_POINT, Labyrinth.START_POINT)) {
-            newPosition = labyrinth.getCurrentState().getPosition()
-                  .map(Position::getUpPosition).orElse(null);
-            newDirection = Direction.UP;
+         if (labyrinth.isNextPositionValidAndNotEqualTo(secondPossibleDirection, Labyrinth.EMPTY_POINT, Labyrinth.START_POINT)) {
+            newPosition = labyrinth.getNextPosition(secondPossibleDirection);
+            newDirection = secondPossibleDirection;
+            countOfPossibleDirections++;
          }
 
-         return Labyrinth.State.of(newPosition, newDirection);
+         return countOfPossibleDirections == 1 ? Labyrinth.State.of(newPosition, newDirection) : null;
       };
    }
 
-   private Supplier<Labyrinth.State> buildChangeStateRuleForUpAndDown() {
-      return () -> {
-         Position newPosition = null;
-         Direction newDirection = null;
-         if (labyrinth.isNextPositionValidAndNotEqualTo(RIGHT, Labyrinth.EMPTY_POINT, Labyrinth.START_POINT)) {
-            newPosition = labyrinth.getCurrentState().getPosition()
-                  .map(Position::getRightPosition).orElse(null);
-            newDirection = Direction.RIGHT;
-         }
-
-         if (labyrinth.isNextPositionValidAndNotEqualTo(LEFT, Labyrinth.EMPTY_POINT, Labyrinth.START_POINT)) {
-            newPosition = labyrinth.getCurrentState().getPosition()
-                  .map(Position::getLeftPosition).orElse(null);
-            newDirection = LEFT;
-         }
-
-         return Labyrinth.State.of(newPosition, newDirection);
-      };
-   }
-
-   private Supplier<Labyrinth.State> buildInitialChangeStateRule() {
-      return () -> {
+   private BiFunction<Direction, Direction, Labyrinth.State> buildInitialChangeStateRule() {
+      return (firstPossibleDirection, secondPossibleDirection) -> {
          Labyrinth.State currentState = labyrinth.getCurrentState();
          Labyrinth.State newState = null;
          if (labyrinth.isNextPositionValidAndNotEqualTo(LEFT, Labyrinth.EMPTY_POINT)) {

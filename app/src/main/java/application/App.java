@@ -16,9 +16,7 @@ public class App {
       if (args.length == 1) {
          List<String> lines = readFile(args[0]);
          MoveEngine moveEngine = new MoveEngine(new Labyrinth(lines));
-         while (moveEngine.nextMove()) {
-            System.out.println(moveEngine.getTrace().getOnlySpecialCharTrace());
-         }
+         moveEngine.moveToTheEnd();
 
          System.out.println("FULL PATH: " + moveEngine.getTrace().getFullTrace());
          System.out.println("ONLY SPECIAL CHAR: " + moveEngine.getTrace().getOnlySpecialCharTrace());
