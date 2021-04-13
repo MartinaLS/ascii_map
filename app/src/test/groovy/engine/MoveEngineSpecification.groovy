@@ -29,8 +29,8 @@ class MoveEngineSpecification extends Specification {
         moveEngine.moveToTheEnd()
 
         then:
-        moveEngine.getMoveTrace().fullTrace == '@---A---+|C|+---+|+-B-x'
-        moveEngine.getMoveTrace().onlySpecialCharTrace == 'ACB'
+        moveEngine.getTrace().fullTrace == '@---A---+|C|+---+|+-B-x'
+        moveEngine.getTrace().onlySpecialCharTrace == 'ACB'
     }
 
     def "test moveToTheEnd_case2:Map 2 - go straight through intersections"() {
@@ -43,8 +43,8 @@ class MoveEngineSpecification extends Specification {
         moveEngine.moveToTheEnd()
 
         then:
-        moveEngine.getMoveTrace().fullTrace == '@|A+---B--+|+--C-+|-||+---D--+|x'
-        moveEngine.getMoveTrace().onlySpecialCharTrace == 'ABCD'
+        moveEngine.getTrace().fullTrace == '@|A+---B--+|+--C-+|-||+---D--+|x'
+        moveEngine.getTrace().onlySpecialCharTrace == 'ABCD'
     }
 
     def "test moveToTheEnd_case3:Map 3 - letters may be found on turns"() {
@@ -57,8 +57,8 @@ class MoveEngineSpecification extends Specification {
         moveEngine.moveToTheEnd()
 
         then:
-        moveEngine.getMoveTrace().fullTrace == '@---A---+|||C---+|+-B-x'
-        moveEngine.getMoveTrace().onlySpecialCharTrace == 'ACB'
+        moveEngine.getTrace().fullTrace == '@---A---+|||C---+|+-B-x'
+        moveEngine.getTrace().onlySpecialCharTrace == 'ACB'
     }
 
     def "test moveToTheEnd_case4:Map 4 - do not collect letters twice"() {
@@ -71,8 +71,8 @@ class MoveEngineSpecification extends Specification {
         moveEngine.moveToTheEnd()
 
         then:
-        moveEngine.getMoveTrace().fullTrace == '@--A-+|+-+|A|+--B--+C|+-+|+-C-+|D|x'
-        moveEngine.getMoveTrace().onlySpecialCharTrace == 'ABCD'
+        moveEngine.getTrace().fullTrace == '@--A-+|+-+|A|+--B--+C|+-+|+-C-+|D|x'
+        moveEngine.getTrace().onlySpecialCharTrace == 'ABCD'
     }
 
     def "test moveToTheEnd_case5:Map 5 - keep direction, even in a compact space"() {
@@ -85,8 +85,8 @@ class MoveEngineSpecification extends Specification {
         moveEngine.moveToTheEnd()
 
         then:
-        moveEngine.getMoveTrace().fullTrace == '@A+++A|+-B-+C+++C-+Dx'
-        moveEngine.getMoveTrace().onlySpecialCharTrace == 'ABCD'
+        moveEngine.getTrace().fullTrace == '@A+++A|+-B-+C+++C-+Dx'
+        moveEngine.getTrace().onlySpecialCharTrace == 'ABCD'
     }
 
     def "test moveToTheEnd_case6:Map 6 - basic example"() {
@@ -99,7 +99,7 @@ class MoveEngineSpecification extends Specification {
         moveEngine.moveToTheEnd()
 
         then:
-        moveEngine.getMoveTrace().fullTrace == '@--+||+---A---x'
-        moveEngine.getMoveTrace().onlySpecialCharTrace == 'A'
+        moveEngine.getTrace().fullTrace == '@--+||+---A---x'
+        moveEngine.getTrace().onlySpecialCharTrace == 'A'
     }
 }

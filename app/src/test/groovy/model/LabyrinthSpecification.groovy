@@ -6,16 +6,6 @@ import spock.lang.Unroll
 import util.FileUtils
 
 class LabyrinthSpecification extends Specification {
-    def "test getCharOnCurrentPosition_providedEmptyList_charOnCurrentPositionIsNull"() {
-        given:
-        Labyrinth labyrinth = new Labyrinth(new ArrayList<String>())
-
-        when:
-        String charOnCurrentPosition = labyrinth.getCharOnCurrentPosition()
-        then:
-        !charOnCurrentPosition
-    }
-
     def "test getCharOnCurrentPosition_providedNoNEmptyList_charOnCurrentPositionIs@"() {
         given:
         List<String> lines = FileUtils.readFile("case3.txt")
@@ -99,7 +89,7 @@ class LabyrinthSpecification extends Specification {
         Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
-        boolean isPositionValid = labyrinth.isDownPositionValidAndNotEqualTo(unallowedChars)
+        boolean isPositionValid = labyrinth.isNextPositionValidAndNotEqualTo(Direction.DOWN, unallowedChars)
 
         then:
         isPositionValid == expectedPositionValid
@@ -117,7 +107,7 @@ class LabyrinthSpecification extends Specification {
         Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
-        boolean isPositionValid = labyrinth.isUpperPositionValidAndNotEqualTo(unallowedChars)
+        boolean isPositionValid = labyrinth.isNextPositionValidAndNotEqualTo(Direction.UP, unallowedChars)
 
         then:
         isPositionValid == expectedPositionValid
@@ -135,7 +125,7 @@ class LabyrinthSpecification extends Specification {
         Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
-        boolean isPositionValid = labyrinth.isLeftPositionValidAndNotEqualTo(unallowedChars)
+        boolean isPositionValid = labyrinth.isNextPositionValidAndNotEqualTo(Direction.LEFT, unallowedChars)
 
         then:
         isPositionValid == expectedPositionValid
@@ -153,7 +143,7 @@ class LabyrinthSpecification extends Specification {
         Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
-        boolean isPositionValid = labyrinth.isRightPositionValidAndNotEqualTo(unallowedChars)
+        boolean isPositionValid = labyrinth.isNextPositionValidAndNotEqualTo(Direction.RIGHT, unallowedChars)
 
         then:
         isPositionValid == expectedPositionValid

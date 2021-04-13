@@ -3,9 +3,12 @@ package model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class Labyrinth {
    public static final String START_POINT = "@";
@@ -20,6 +23,8 @@ public class Labyrinth {
 
    private int maxColumns = 100;
 
+   private final Map<Direction, Supplier<Position>> directionRule = new HashMap<>();
+
    private final List<Position> startPositions = new ArrayList<>();
 
    private final List<Position> endPositions = new ArrayList<>();
@@ -28,6 +33,7 @@ public class Labyrinth {
 
    public Labyrinth(List<String> inputLines) {
       load(inputLines);
+      registerDirectionRules();
    }
 
    private void load(List<String> lines) {
@@ -65,7 +71,7 @@ public class Labyrinth {
    }
 
    public boolean isPositionValid(Position position) {
-      return position.getColumnIndex() >= 0 && position.getColumnIndex() < maxColumns
+      return position != null && position.getColumnIndex() >= 0 && position.getColumnIndex() < maxColumns
             && position.getRowIndex() >= 0 && position.getRowIndex() < maxRows;
    }
 
@@ -96,24 +102,23 @@ public class Labyrinth {
       return null;
    }
 
-   public boolean isDownPositionValidAndNotEqualTo(String... elements) {
-      return isPositionValidAndIsNotEqualTo(currentState.position.getDownPosition(), elements);
+   public Position getNextPosition(Direction direction) {
+      return directionRule.get(direction).get();
    }
 
-   public boolean isUpperPositionValidAndNotEqualTo(String... elements) {
-      return isPositionValidAndIsNotEqualTo(currentState.position.getUpPosition(), elements);
-   }
-
-   public boolean isLeftPositionValidAndNotEqualTo(String... elements) {
-      return isPositionValidAndIsNotEqualTo(currentState.position.getLeftPosition(), elements);
-   }
-
-   public boolean isRightPositionValidAndNotEqualTo(String... elements) {
-      return isPositionValidAndIsNotEqualTo(currentState.position.getRightPosition(), elements);
+   public boolean isNextPositionValidAndNotEqualTo(Direction direction, String... elements) {
+      return isPositionValidAndIsNotEqualTo(directionRule.get(direction).get(), elements);
    }
 
    public boolean isCurrentPositionValidAndNotEqualTo(String... elements) {
       return isPositionValidAndIsNotEqualTo(currentState.position, elements);
+   }
+
+   private void registerDirectionRules() {
+      directionRule.put(Direction.UP, () -> currentState.getPosition().map(Position::getUpPosition).orElse(null));
+      directionRule.put(Direction.RIGHT, () -> currentState.getPosition().map(Position::getRightPosition).orElse(null));
+      directionRule.put(Direction.LEFT, () -> currentState.getPosition().map(Position::getLeftPosition).orElse(null));
+      directionRule.put(Direction.DOWN, () -> currentState.getPosition().map(Position::getDownPosition).orElse(null));
    }
 
    public void setCurrentState(State state) {

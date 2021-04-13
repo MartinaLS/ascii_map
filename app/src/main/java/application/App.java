@@ -17,11 +17,11 @@ public class App {
          List<String> lines = readFile(args[0]);
          MoveEngine moveEngine = new MoveEngine(new Labyrinth(lines));
          while (moveEngine.nextMove()) {
-            System.out.println(moveEngine.getMoveTrace().getOnlySpecialCharTrace());
+            System.out.println(moveEngine.getTrace().getOnlySpecialCharTrace());
          }
 
-         System.out.println("FULL PATH: " + moveEngine.getMoveTrace().getFullTrace());
-         System.out.println("ONLY SPECIAL CHAR: " + moveEngine.getMoveTrace().getOnlySpecialCharTrace());
+         System.out.println("FULL PATH: " + moveEngine.getTrace().getFullTrace());
+         System.out.println("ONLY SPECIAL CHAR: " + moveEngine.getTrace().getOnlySpecialCharTrace());
       }
    }
 }
