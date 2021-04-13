@@ -69,6 +69,14 @@ public class Labyrinth {
       return null;
    }
 
+   public String getCurrentPositionCoordinates() {
+      Optional<Position> currentPosition = currentState.getPosition();
+      if (currentPosition.isPresent() && isPositionValid(currentPosition.get())) {
+         return String.format("(%s, %s)", currentPosition.get().getRowIndex(), currentPosition.get().getColumnIndex());
+      }
+      return null;
+   }
+
    public boolean isDownPositionValidAndNotEqualTo(String... elements) {
       return isPositionValidAndIsNotEqualTo(currentState.position.getDownPosition(), elements);
    }

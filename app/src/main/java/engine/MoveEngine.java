@@ -28,6 +28,16 @@ public class MoveEngine {
             moveTrace.addNewCharacter(position, labyrinth.getCharOnCurrentPosition()));
    }
 
+   public void moveToTheEnd() {
+      System.out.println("Start moving...");
+      System.out.println("Start coordinate: " + labyrinth.getCurrentPositionCoordinates());
+      while (nextMove()) {
+         System.out.println("-> Current position coordinate: " + labyrinth.getCurrentPositionCoordinates());
+      }
+
+      System.out.println("End coordinate: " + labyrinth.getCurrentPositionCoordinates());
+   }
+
    public boolean nextMove() {
       Labyrinth.State state = null;
       if (labyrinth.isCurrentPositionValidAndNotEqualTo(" ", "x", "+", "@")) {
@@ -52,7 +62,7 @@ public class MoveEngine {
       return !"x".equals(newCharacter);
    }
 
-   public void registerRules() {
+   private void registerRules() {
       directionToChangeStateRule.put(Direction.LEFT, this.buildChangeStateRuleForRightAndLeft());
       directionToChangeStateRule.put(Direction.RIGHT, this.buildChangeStateRuleForRightAndLeft());
       directionToChangeStateRule.put(Direction.UP, this.buildChangeStateRuleForUpAndDown());
@@ -98,7 +108,7 @@ public class MoveEngine {
    }
 
 
-   public UnaryOperator<Labyrinth.State> buildChangeStateRuleForRightAndLeft() {
+   private UnaryOperator<Labyrinth.State> buildChangeStateRuleForRightAndLeft() {
       return state -> {
          Position newPosition = null;
          Direction newDirection = null;
@@ -118,7 +128,7 @@ public class MoveEngine {
       };
    }
 
-   public UnaryOperator<Labyrinth.State> buildChangeStateRuleForUpAndDown() {
+   private UnaryOperator<Labyrinth.State> buildChangeStateRuleForUpAndDown() {
       return state -> {
          Position newPosition = null;
          Direction newDirection = null;
@@ -138,7 +148,7 @@ public class MoveEngine {
       };
    }
 
-   public UnaryOperator<Labyrinth.State> buildInitialChangeStateRule() {
+   private UnaryOperator<Labyrinth.State> buildInitialChangeStateRule() {
       return state -> {
          Labyrinth.State currentState = labyrinth.getCurrentState();
          Labyrinth.State newState = null;

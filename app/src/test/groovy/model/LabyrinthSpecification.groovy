@@ -7,7 +7,7 @@ import util.FileUtils
 class LabyrinthSpecification extends Specification {
     def "test getCharOnCurrentPosition_providedEmptyList_charOnCurrentPositionIsNull"() {
         given:
-        Labyrinth labyrinth = new Labyrinth(new ArrayList<String>());
+        Labyrinth labyrinth = new Labyrinth(new ArrayList<String>())
 
         when:
         String charOnCurrentPosition = labyrinth.getCharOnCurrentPosition()
@@ -17,8 +17,8 @@ class LabyrinthSpecification extends Specification {
 
     def "test getCharOnCurrentPosition_providedNoNEmptyList_charOnCurrentPositionIs@"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         String charOnCurrentPosition = labyrinth.getCharOnCurrentPosition()
@@ -30,8 +30,8 @@ class LabyrinthSpecification extends Specification {
     @Unroll
     def "test getCharOnPosition_providedNoNEmptyList_charOnCurrentPositionIs#expectedChar"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         String charOnCurrentPosition = labyrinth.getCharOnPosition(Position.of(0, 2))
@@ -52,8 +52,8 @@ class LabyrinthSpecification extends Specification {
     @Unroll
     def "test isPositionValid_labyrinthWithProvidedNoNEmptyList_positionIsValid=#expectedPositionValid"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         boolean isPositionValid = labyrinth.isPositionValid(Position.of(sourceRowIndex, sourceColumnIndex))
@@ -72,8 +72,8 @@ class LabyrinthSpecification extends Specification {
     @Unroll
     def "test isPositionValidAndIsNotEqualTo_labyrinthWithProvidedNoNEmptyList_positionIsValid=#expectedPositionValid"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         boolean isPositionValid = labyrinth.isPositionValidAndIsNotEqualTo(Position.of(sourceRowIndex, sourceColumnIndex), unallowdChars)
@@ -94,8 +94,8 @@ class LabyrinthSpecification extends Specification {
     @Unroll
     def "test isDownPositionValidAndNotEqualTo_labyrinthWithProvidedNoNEmptyList_positionIsValid=#expectedPositionValid"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         boolean isPositionValid = labyrinth.isDownPositionValidAndNotEqualTo(unallowedChars)
@@ -112,8 +112,8 @@ class LabyrinthSpecification extends Specification {
     @Unroll
     def "test isUpperPositionValidAndNotEqualTo_labyrinthWithProvidedNoNEmptyList_positionIsValid=#expectedPositionValid"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         boolean isPositionValid = labyrinth.isUpperPositionValidAndNotEqualTo(unallowedChars)
@@ -130,8 +130,8 @@ class LabyrinthSpecification extends Specification {
     @Unroll
     def "test isLeftPositionValidAndNotEqualTo_labyrinthWithProvidedNoNEmptyList_positionIsValid=#expectedPositionValid"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         boolean isPositionValid = labyrinth.isLeftPositionValidAndNotEqualTo(unallowedChars)
@@ -148,8 +148,8 @@ class LabyrinthSpecification extends Specification {
     @Unroll
     def "test isRightPositionValidAndNotEqualTo_labyrinthWithProvidedNoNEmptyList_positionIsValid=#expectedPositionValid"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         boolean isPositionValid = labyrinth.isRightPositionValidAndNotEqualTo(unallowedChars)
@@ -167,8 +167,8 @@ class LabyrinthSpecification extends Specification {
     @Unroll
     def "test isCurrentPositionValidAndNotEqualTo_labyrinthWithProvidedNoNEmptyList_positionIsValid=#expectedPositionValid"() {
         given:
-        List<String> lines = FileUtils.readFile("ascii_path_1.txt")
-        Labyrinth labyrinth = new Labyrinth(lines);
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
         boolean isPositionValid = labyrinth.isCurrentPositionValidAndNotEqualTo(unallowedChars)
