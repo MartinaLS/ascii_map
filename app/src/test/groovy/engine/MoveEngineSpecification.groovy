@@ -17,6 +17,7 @@ class MoveEngineSpecification extends Specification {
 
         then:
         hasNext
+        labyrinth.getCharOnCurrentPosition() == '-'
     }
 
     def "test moveToTheEnd_case1:Map 1 - a basic example"() {
