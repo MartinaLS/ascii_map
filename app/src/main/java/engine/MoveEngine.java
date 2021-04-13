@@ -57,23 +57,21 @@ public class MoveEngine {
       }
 
       if ((newState == null || newState.getPosition().isEmpty()) && labyrinth.isCurrentPositionValidAndNotEqualTo("x")) {
-         newState = labyrinth.getCurrentState().getDirection()
-               .map(direction -> {
-                  List<Direction> directions = directionToPerpendicularDirections
-                        .getOrDefault(direction, Arrays.asList(UP, DOWN, LEFT, RIGHT));
-                  return directionToChangeStateRule.get(direction)
-                        .apply(directions.get(0), directions.get(1));
-               }).orElse(null);
+         newState = labyrinth.getCurrentState().getDirection().map(direction -> {
+            List<Direction> directions = directionToPerpendicularDirections
+                  .getOrDefault(direction, Arrays.asList(UP, DOWN, LEFT, RIGHT));
+            return directionToChangeStateRule.get(direction)
+                  .apply(directions.get(0), directions.get(1));
+         }).orElse(null);
       }
 
-      Optional.ofNullable(newState)
-            .ifPresent(state -> {
-               labyrinth.setCurrentState(state);
-               trace.addNewCharacter(state.getPosition()
-                     .orElseThrow(() -> {
-                        throw new RuntimeException("Cannot determine next move");
-                     }), labyrinth.getCharOnCurrentPosition());
-            });
+      Optional.ofNullable(newState).ifPresent(state -> {
+         labyrinth.setCurrentState(state);
+         trace.addNewCharacter(state.getPosition()
+               .orElseThrow(() -> {
+                  throw new RuntimeException("Cannot determine next move");
+               }), labyrinth.getCharOnCurrentPosition());
+      });
 
       return !"x".equals(labyrinth.getCharOnCurrentPosition());
    }

@@ -6,6 +6,18 @@ import spock.lang.Unroll
 import util.FileUtils
 
 class LabyrinthSpecification extends Specification {
+    def "test getCurrentPositionCoordinates_providedNoNEmptyList_charOnCurrentPositionIs@"() {
+        given:
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
+
+        when:
+        String coordinates = labyrinth.getCurrentPositionCoordinates()
+
+        then:
+        coordinates == '(0, 1)'
+    }
+
     def "test getCharOnCurrentPosition_providedNoNEmptyList_charOnCurrentPositionIs@"() {
         given:
         List<String> lines = FileUtils.readFile("case3.txt")
@@ -153,6 +165,26 @@ class LabyrinthSpecification extends Specification {
         new String[]{}    || true
         new String[]{" "} || true
         new String[]{"-"} || false
+    }
+
+    @Unroll
+    def "test getNextPosition-inDirection:#sourceDirection"() {
+        given:
+        List<String> lines = FileUtils.readFile("case3.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
+
+        when:
+        Position position = labyrinth.getNextPosition(sourceDirection)
+
+        then:
+        position == targetPosition
+
+        where:
+        sourceDirection || targetPosition
+        Direction.LEFT  || Position.of(0, 0)
+        Direction.RIGHT || Position.of(0, 2)
+        Direction.UP    || Position.of(-1, 1)
+        Direction.DOWN  || Position.of(1, 1)
     }
 
     @Unroll
