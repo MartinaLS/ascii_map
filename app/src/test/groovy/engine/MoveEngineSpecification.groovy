@@ -13,7 +13,7 @@ class MoveEngineSpecification extends Specification {
 
         MoveEngine moveEngine = new MoveEngine(labyrinth)
         when:
-        boolean hasNext = moveEngine.nextMove();
+        boolean hasNext = moveEngine.nextMove()
 
         then:
         hasNext
@@ -26,7 +26,7 @@ class MoveEngineSpecification extends Specification {
 
         MoveEngine moveEngine = new MoveEngine(labyrinth)
         when:
-        moveEngine.moveToTheEnd();
+        moveEngine.moveToTheEnd()
 
         then:
         moveEngine.getMoveTrace().fullTrace == '@---A---+|C|+---+|+-B-x'
@@ -40,7 +40,7 @@ class MoveEngineSpecification extends Specification {
 
         MoveEngine moveEngine = new MoveEngine(labyrinth)
         when:
-        moveEngine.moveToTheEnd();
+        moveEngine.moveToTheEnd()
 
         then:
         moveEngine.getMoveTrace().fullTrace == '@|A+---B--+|+--C-+|-||+---D--+|x'
@@ -54,7 +54,7 @@ class MoveEngineSpecification extends Specification {
 
         MoveEngine moveEngine = new MoveEngine(labyrinth)
         when:
-        moveEngine.moveToTheEnd();
+        moveEngine.moveToTheEnd()
 
         then:
         moveEngine.getMoveTrace().fullTrace == '@---A---+|||C---+|+-B-x'
@@ -68,7 +68,7 @@ class MoveEngineSpecification extends Specification {
 
         MoveEngine moveEngine = new MoveEngine(labyrinth)
         when:
-        moveEngine.moveToTheEnd();
+        moveEngine.moveToTheEnd()
 
         then:
         moveEngine.getMoveTrace().fullTrace == '@--A-+|+-+|A|+--B--+C|+-+|+-C-+|D|x'
@@ -82,10 +82,24 @@ class MoveEngineSpecification extends Specification {
 
         MoveEngine moveEngine = new MoveEngine(labyrinth)
         when:
-        moveEngine.moveToTheEnd();
+        moveEngine.moveToTheEnd()
 
         then:
         moveEngine.getMoveTrace().fullTrace == '@A+++A|+-B-+C+++C-+Dx'
         moveEngine.getMoveTrace().onlySpecialCharTrace == 'ABCD'
+    }
+
+    def "test moveToTheEnd_case5:Map 6 - basic example"() {
+        given:
+        List<String> lines = FileUtils.readFile("case6.txt")
+        Labyrinth labyrinth = new Labyrinth(lines)
+
+        MoveEngine moveEngine = new MoveEngine(labyrinth)
+        when:
+        moveEngine.moveToTheEnd()
+
+        then:
+        moveEngine.getMoveTrace().fullTrace == '@--+||+---A---x'
+        moveEngine.getMoveTrace().onlySpecialCharTrace == 'A'
     }
 }
