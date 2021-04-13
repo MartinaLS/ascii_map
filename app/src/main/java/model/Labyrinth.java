@@ -55,7 +55,11 @@ public class Labyrinth {
    }
 
    public String getCharOnCurrentPosition() {
-      return getCharOnPosition(currentState.position);
+      if (currentState.getPosition().isPresent()) {
+         return getCharOnPosition(currentState.getPosition().get());
+      }
+
+      return null;
    }
 
    public String getCharOnPosition(Position position) {
