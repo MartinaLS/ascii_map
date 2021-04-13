@@ -1,5 +1,5 @@
-import model.Labyrinth
-import model.Position
+package model
+
 import spock.lang.Specification
 import spock.lang.Unroll
 import util.FileUtils
