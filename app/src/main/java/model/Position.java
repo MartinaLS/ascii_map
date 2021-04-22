@@ -57,4 +57,9 @@ public class Position {
       result = prime * result + columnIndex;
       return result;
    }
+
+   @Override
+   public String toString() {
+      return  String.format("(%s, %s)", rowIndex, columnIndex);
+   }
 }

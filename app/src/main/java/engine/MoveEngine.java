@@ -32,21 +32,23 @@ public class MoveEngine {
    public MoveEngine(Labyrinth labyrinth) {
       this.registerRules();
       this.labyrinth = labyrinth;
+   }
+
+   public void moveToTheEnd() {
+      System.out.println("Start moving...");
+
       labyrinth.getCurrentState().getPosition().ifPresentOrElse(position ->
                   trace.addNewCharacter(position, labyrinth.getCharOnCurrentPosition()),
             () -> {
                throw new RuntimeException("Unknown starting point.");
             });
-   }
 
-   public void moveToTheEnd() {
-      System.out.println("Start moving...");
-      System.out.println("Start coordinate: " + labyrinth.getCurrentPositionCoordinates());
+      System.out.println("Start coordinate: " + labyrinth.getCurrentPosition());
       while (nextMove()) {
-         System.out.println("-> Current position coordinate: " + labyrinth.getCurrentPositionCoordinates());
+         System.out.println("-> Current position coordinate: " + labyrinth.getCurrentPosition());
       }
 
-      System.out.println("End coordinate: " + labyrinth.getCurrentPositionCoordinates());
+      System.out.println("End coordinate: " + labyrinth.getCurrentPosition());
    }
 
    public boolean nextMove() {
@@ -73,7 +75,7 @@ public class MoveEngine {
                }), labyrinth.getCharOnCurrentPosition());
       });
 
-      return !"x".equals(labyrinth.getCharOnCurrentPosition());
+      return labyrinth.isEndReached();
    }
 
    private BiFunction<Direction, Direction, Labyrinth.State> buildChangeStateRule() {

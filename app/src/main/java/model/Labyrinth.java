@@ -87,6 +87,10 @@ public class Labyrinth {
       return null;
    }
 
+   public boolean isEndReached() {
+      return !"x".equals(getCharOnCurrentPosition());
+   }
+
    public String getCharOnPosition(Position position) {
       if (isPositionValid(position)) {
          return matrix[position.getRowIndex()][position.getColumnIndex()];
@@ -98,6 +102,14 @@ public class Labyrinth {
       Optional<Position> currentPosition = currentState.getPosition();
       if (currentPosition.isPresent() && isPositionValid(currentPosition.get())) {
          return String.format("(%s, %s)", currentPosition.get().getRowIndex(), currentPosition.get().getColumnIndex());
+      }
+      return null;
+   }
+
+   public Position getCurrentPosition() {
+      Optional<Position> currentPosition = currentState.getPosition();
+      if (currentPosition.isPresent() && isPositionValid(currentPosition.get())) {
+         return currentPosition.get();
       }
       return null;
    }
