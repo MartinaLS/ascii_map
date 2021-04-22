@@ -37,10 +37,10 @@ class LabyrinthSpecification extends Specification {
         Labyrinth labyrinth = new Labyrinth(lines)
 
         when:
-        String charOnCurrentPosition = labyrinth.getCharOnPosition(Position.of(0, 2))
+        String charOnCurrentPosition = labyrinth.getCharOnPosition(Position.of(sourceRowIndex, sourceColumnIndex))
 
         then:
-        charOnCurrentPosition == '-'
+        charOnCurrentPosition == expectedChar
 
         where:
         sourceRowIndex | sourceColumnIndex || expectedChar
